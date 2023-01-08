@@ -32,4 +32,13 @@ public class Endpoint {
 
 	}
 
+	@PostMapping(value = "filelist", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<String> postFileList(@RequestBody InputDto input) {
+		log.info("Inside Endpoint.postFileList()");
+		
+		String response = service.fileListService(input);
+
+		return new ResponseEntity<>(response, HttpStatus.OK);
+
+	}
 }

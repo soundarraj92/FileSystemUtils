@@ -1,5 +1,8 @@
 package com.org.soundar.dto;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
@@ -13,15 +16,20 @@ import lombok.ToString;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class ResponseDto {
+public class FileListRespDto {
 
 	@JsonProperty(value = "contentsList")
-	ContentDto contentsList = new ContentDto();
+	List<String> fileList = new ArrayList<>();
 
 	@JsonProperty(value = "inputPath")
 	private String inputPath;
 
+	@JsonProperty(value = "totalSize")
+	private String totalSize;
+
+	@JsonProperty(value = "noOfFiles")
+	private long noOfFiles;
+
 	@JsonProperty(value = "detailedInfo", defaultValue = "false")
 	private boolean detailedInfo = false;
-
 }
