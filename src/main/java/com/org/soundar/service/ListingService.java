@@ -17,6 +17,7 @@ import com.org.soundar.dto.DirectoryDto;
 import com.org.soundar.dto.FileListRespDto;
 import com.org.soundar.dto.InputDto;
 import com.org.soundar.dto.PropertiesRespDto;
+import com.org.soundar.exception.AppCustomException;
 import com.org.soundar.utils.GenUtils;
 
 import lombok.extern.slf4j.Slf4j;
@@ -35,8 +36,9 @@ public class ListingService {
 	 * 
 	 * @param input
 	 * @return
+	 * @throws AppCustomException
 	 */
-	public String folderPropService(InputDto input) {
+	public String folderPropService(InputDto input) throws AppCustomException {
 		log.info("Inside Service.folderPropService()");
 
 		/* Response Object */
@@ -76,8 +78,9 @@ public class ListingService {
 	 * 
 	 * @param input
 	 * @return
+	 * @throws Exception
 	 */
-	public String fileListService(InputDto input) {
+	public String fileListService(InputDto input) throws AppCustomException {
 		log.info("Inside Service.fileListService()");
 
 		/* Response Object */
@@ -113,6 +116,7 @@ public class ListingService {
 		dir.setName(f.getName());
 		dir.setPath(f.getAbsolutePath());
 		dir.setSize(util.readableFileSize(FileUtils.sizeOfDirectory(f)));
+//		dir.setNoOfItems(Array.getLength(f.list()));
 		dir.setNoOfItems(f.getName().equalsIgnoreCase("System Volume Information") ? 0l : Array.getLength(f.list()));
 		dirList.add(dir);
 	}
@@ -139,15 +143,19 @@ public class ListingService {
 	 * @param fileList
 	 */
 	private void prepareFileList(File file, List<String> fileList) {
-		/* Obtains a list of files and folders in input path */
-		File[] list = file.listFiles();
-		/* Iterate over above list and add to fileList */
-		for (File f : list) {
-			if (f.isFile())
-				fileList.add(f.getAbsolutePath());
-			else
-				prepareFileList(f, fileList);
+		/* Ignore contents of "System Volume Information" directory */
+		if (file.getName().equals("System Volume Information")) {
+			fileList.add(file.getAbsolutePath());
+		} else {
+			/* Obtains a list of files and folders in input path */
+			File[] list = file.listFiles();
+			/* Iterate over above list and add to fileList */
+			for (File f : list) {
+				if (f.isFile())
+					fileList.add(f.getAbsolutePath());
+				else
+					prepareFileList(f, fileList);
+			}
 		}
-
 	}
 }

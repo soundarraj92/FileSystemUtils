@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.org.soundar.dto.InputDto;
+import com.org.soundar.exception.AppCustomException;
 import com.org.soundar.service.ListingService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +26,7 @@ public class Endpoint {
 	@PostMapping(value = "properties", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<String> postFolderProperties(@RequestBody InputDto input) {
 		log.info("Inside Endpoint.postFolderProperties()");
-		
+
 		String response = service.folderPropService(input);
 
 		return new ResponseEntity<>(response, HttpStatus.OK);
@@ -33,9 +34,9 @@ public class Endpoint {
 	}
 
 	@PostMapping(value = "filelist", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<String> postFileList(@RequestBody InputDto input) {
+	public ResponseEntity<String> postFileList(@RequestBody InputDto input) throws AppCustomException {
 		log.info("Inside Endpoint.postFileList()");
-		
+
 		String response = service.fileListService(input);
 
 		return new ResponseEntity<>(response, HttpStatus.OK);

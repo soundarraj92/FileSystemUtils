@@ -5,6 +5,9 @@ import java.text.DecimalFormat;
 
 import org.springframework.stereotype.Component;
 
+import com.org.soundar.exception.AppCustomException;
+import com.org.soundar.exception.DirNotFoundException;
+
 import lombok.extern.slf4j.Slf4j;
 
 @Component
@@ -15,15 +18,16 @@ public class GenUtils {
 	 * Utility to validate if given path is a directory
 	 * 
 	 * @param path
+	 * @throws Exception
 	 */
-	public void validateDirectoryPath(String path) {
-		try {
-			File file = new File(path);
-			if (file.exists() && file.isDirectory())
-				log.info("Directory path valid - {}", path);
-		} catch (Exception e) {
-			log.error("Invalid path - {}", e.getMessage());
-			throw e;
+	public void validateDirectoryPath(String path) throws AppCustomException {
+
+		File file = new File(path);
+		if (file.exists() && file.isDirectory())
+			log.info("Directory path valid - {}", path);
+		else {
+			log.error("Invalid path - {}", path);
+			throw new DirNotFoundException(path);
 		}
 	}
 
