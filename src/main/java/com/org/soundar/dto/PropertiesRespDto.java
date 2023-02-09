@@ -20,9 +20,15 @@ public class PropertiesRespDto {
 
 	@JsonProperty(value = "inputPath")
 	private String inputPath;
-	
+
 	@JsonProperty(value = "totalSize")
 	private String totalSize;
+
+	@JsonProperty(value = "diskSize")
+	private String diskSize;
+	
+	@JsonProperty(value = "unusedDiskSpace")
+	private String unusedDiskSpace;
 
 	@JsonProperty(value = "detailedInfo", defaultValue = "false")
 	private boolean detailedInfo = false;

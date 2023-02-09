@@ -15,9 +15,12 @@ import lombok.ToString;
 @AllArgsConstructor
 public class InputDto {
 
-	@JsonProperty(value = "fsPath")
+	@JsonProperty(value = "fsPath", required = true)
 	private String fsPath;
 
-	@JsonProperty(value = "detailedInfo", defaultValue = "false")
+	@JsonProperty(value = "fileTypeExclusions", required = false)
+	private String fileTypeExclusions;
+
+	@JsonProperty(value = "detailedInfo", required = false, defaultValue = "false")
 	private boolean detailedInfo = false;
 }

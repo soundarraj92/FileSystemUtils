@@ -42,4 +42,14 @@ public class Endpoint {
 		return new ResponseEntity<>(response, HttpStatus.OK);
 
 	}
+
+	@PostMapping(value = "duplicate-list", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<String> findDuplicates(@RequestBody InputDto input) throws AppCustomException {
+		log.info("Inside Endpoint.findDuplicates()");
+
+		String response = service.findDuplicateService(input);
+
+		return new ResponseEntity<>(response, HttpStatus.OK);
+
+	}
 }

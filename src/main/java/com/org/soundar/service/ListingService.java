@@ -4,16 +4,24 @@ import java.io.File;
 import java.lang.reflect.Array;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.org.soundar.dto.ContentDto;
 import com.org.soundar.dto.DirectoryDto;
+import com.org.soundar.dto.DuplicateListRespDto;
 import com.org.soundar.dto.FileListRespDto;
 import com.org.soundar.dto.InputDto;
 import com.org.soundar.dto.PropertiesRespDto;
@@ -66,6 +74,8 @@ public class ListingService {
 
 		res.setContentsList(contents);
 		res.setTotalSize(util.readableFileSize(FileUtils.sizeOfDirectory(root)));
+		res.setDiskSize(util.readableFileSize(root.getTotalSpace()));
+		res.setUnusedDiskSpace(util.readableFileSize(root.getFreeSpace()));
 		Type refType = new TypeToken<PropertiesRespDto>() {
 		}.getType();
 		log.info("Folder Properties update complete - {}", input.getFsPath());
@@ -103,6 +113,80 @@ public class ListingService {
 		log.info("File List update complete - {}", input.getFsPath());
 
 		return gson.toJson(res, refType);
+	}
+
+	/**
+	 * Service method for finding duplicates
+	 * 
+	 * @param input
+	 * @return
+	 * @throws AppCustomException
+	 */
+	public String findDuplicateService(InputDto input) throws AppCustomException {
+		log.info("Inside Service.findDuplicateService()");
+
+		/* Response Object */
+		DuplicateListRespDto res = new DuplicateListRespDto();
+		res.setInputPath(input.getFsPath());
+		res.setFileTypeExclusions(input.getFileTypeExclusions());
+		List<String> fileList = new ArrayList<>();
+		Map<String, List<String>> duplicatedMap = new HashMap<>();
+
+		/* Validates if input path is a directory */
+		util.validateDirectoryPath(input.getFsPath());
+
+		File root = new File(input.getFsPath());
+		prepareFileList(root, fileList);
+
+		duplicatedMap = filterDuplicates(fileList, input.getFileTypeExclusions());
+
+		res.setDuplicatedFilesMap(duplicatedMap);
+		res.setNoOfFiles(duplicatedMap.size());
+		Type refType = new TypeToken<DuplicateListRespDto>() {
+		}.getType();
+		log.info("Find duplicate files complete - {}", input.getFsPath());
+
+		return gson.toJson(res, refType);
+	}
+
+	/**
+	 * Method to filter duplicate files after applying exclusions
+	 * 
+	 * @param fileListWithPaths
+	 * @return
+	 */
+	private Map<String, List<String>> filterDuplicates(List<String> fileListWithPaths, String exclusionTypes) {
+		Map<String, List<String>> duplicatedMap = new HashMap<>();
+
+		/* Exclude the file extension */
+		// TODO: need to add support for multiple exclusions
+		List<String> listAfterExclusion = StringUtils.hasLength(exclusionTypes)
+				? fileListWithPaths.stream().filter(f -> !f.endsWith(exclusionTypes)).collect(Collectors.toList())
+				: fileListWithPaths;
+
+		List<String> fileNamesList = new ArrayList<>();
+
+		/* Extract just filenames into a list */
+		for (String str : listAfterExclusion) {
+			String s = str.substring(str.lastIndexOf("\\") + 1);
+			fileNamesList.add(s);
+		}
+
+		/* Iterate over filenames and find duplicates */
+		Set<String> set = new HashSet<>();
+		for (String i : fileNamesList) {
+			if (Collections.frequency(fileNamesList, i) > 1) {
+				set.add(i);
+			}
+		}
+
+		/* Iterate over duplicated files and add their paths */
+		for (String s : set) {
+			List<String> values = fileListWithPaths.stream().filter(f -> f.endsWith(s)).collect(Collectors.toList());
+			duplicatedMap.put(s, values);
+		}
+
+		return duplicatedMap;
 	}
 
 	/**
