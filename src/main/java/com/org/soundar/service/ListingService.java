@@ -22,6 +22,7 @@ import com.google.gson.reflect.TypeToken;
 import com.org.soundar.dto.ContentDto;
 import com.org.soundar.dto.DirectoryDto;
 import com.org.soundar.dto.DuplicateListRespDto;
+import com.org.soundar.dto.FileDto;
 import com.org.soundar.dto.FileListRespDto;
 import com.org.soundar.dto.InputDto;
 import com.org.soundar.dto.PropertiesRespDto;
@@ -103,6 +104,7 @@ public class ListingService {
 		util.validateDirectoryPath(input.getFsPath());
 
 		File root = new File(input.getFsPath());
+		/* Accumulated list of files and folders in input path */
 		prepareFileList(root, fileList);
 
 		res.setFileList(fileList);
@@ -136,6 +138,7 @@ public class ListingService {
 		util.validateDirectoryPath(input.getFsPath());
 
 		File root = new File(input.getFsPath());
+		/* Accumulated list of files and folders in input path */
 		prepareFileList(root, fileList);
 
 		duplicatedMap = filterDuplicates(fileList, input.getFileTypeExclusions());
@@ -147,6 +150,70 @@ public class ListingService {
 		log.info("Find duplicate files complete - {}", input.getFsPath());
 
 		return gson.toJson(res, refType);
+	}
+
+	/**
+	 * Service method to find Zero Byte files
+	 * 
+	 * @param input
+	 * @return
+	 * @throws AppCustomException
+	 */
+	public String findSizeZeroService(InputDto input) throws AppCustomException {
+		log.info("Inside Service.findSizeZeroService()");
+
+		/* Response Object */
+		List<FileDto> fileDtoList = new ArrayList<>();
+		List<String> fileList = new ArrayList<>();
+
+		/* Validates if input path is a directory */
+		util.validateDirectoryPath(input.getFsPath());
+
+		File root = new File(input.getFsPath());
+		/* Accumulated list of files and folders in input path */
+		prepareFileList(root, fileList);
+
+		fileDtoList = filterSizeZeroFiles(fileList);
+
+		Type refType = new TypeToken<List<FileDto>>() {
+		}.getType();
+		log.info("Find Size Zero files complete - {}", input.getFsPath());
+
+		return gson.toJson(fileDtoList, refType);
+	}
+
+	/**
+	 * Method to filter Zero Byte files
+	 * 
+	 * @param fileList
+	 * @return
+	 */
+	private List<FileDto> filterSizeZeroFiles(List<String> fileList) {
+		List<FileDto> fileDtoList = new ArrayList<>();
+
+		for (String s : fileList) {
+			File f = new File(s);
+			/* Checks the size of file */
+			if (f.length() < 1l)
+				fileDtoList.add(fetchFileInfo(f));
+		}
+
+		return fileDtoList;
+	}
+
+	/**
+	 * Method to update File Info
+	 * 
+	 * @param f
+	 * @return
+	 */
+	private FileDto fetchFileInfo(File f) {
+		FileDto file = new FileDto();
+		file.setFilename(f.getName());
+		file.setFileNameWithPath(f.getAbsolutePath());
+		file.setSizeInBytes(f.length());
+		file.setSizeReadable(util.readableFileSize(f.length()));
+		return file;
 	}
 
 	/**
@@ -190,7 +257,7 @@ public class ListingService {
 	}
 
 	/**
-	 * Add directory info to dir List
+	 * Add directory info to directory List
 	 * 
 	 * @param f
 	 * @param dirList
@@ -206,7 +273,7 @@ public class ListingService {
 	}
 
 	/**
-	 * Add file info file List
+	 * Method to add file info to file List
 	 * 
 	 * @param f
 	 * @param fileList
@@ -221,7 +288,7 @@ public class ListingService {
 	}
 
 	/**
-	 * Prepare files list
+	 * Method to prepare files list
 	 * 
 	 * @param file
 	 * @param fileList

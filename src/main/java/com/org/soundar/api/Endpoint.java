@@ -52,4 +52,25 @@ public class Endpoint {
 		return new ResponseEntity<>(response, HttpStatus.OK);
 
 	}
+
+	@PostMapping(value = "search", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<String> findSearched(@RequestBody InputDto input) throws AppCustomException {
+		log.info("Inside Endpoint.findSearched()");
+
+		String response = service.findDuplicateService(input);
+
+		return new ResponseEntity<>(response, HttpStatus.OK);
+
+	}
+
+	@PostMapping(value = "size-zero", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<String> findSizeZero(@RequestBody InputDto input) throws AppCustomException {
+		log.info("Inside Endpoint.findSizeZero()");
+
+		String response = service.findSizeZeroService(input);
+
+		return new ResponseEntity<>(response, HttpStatus.OK);
+
+	}
+
 }
