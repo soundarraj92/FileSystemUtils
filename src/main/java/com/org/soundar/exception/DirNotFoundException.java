@@ -9,6 +9,6 @@ public class DirNotFoundException extends AppCustomException {
 	private static final long serialVersionUID = 3709236632445074954L;
 
 	public DirNotFoundException(String path) {
-		super("File Syatem Path not found - " + path);
+		super("File System Path not found - " + path);
 	}
 }

@@ -5,23 +5,23 @@ Contains few endpoints for files management inside your drive.
 URL wise details are as below:
 -----------------------------
 
-API: /ezio/api/properties
+API: /filebase/api/properties
 MethodType: POST
 Desc: Gives a high level view of files and folders with their sizes in input directory
 
-API: /ezio/api/filelist
+API: /filebase/api/filelist
 MethodType: POST
 Desc: Traverses inside folders and gives a complete list of all files with full paths
 
-API: /ezio/api/duplicate-list
+API: /filebase/api/duplicate-list
 MethodType: POST
 Desc: Acquires complete list of all files and checks if there are matching files w.r.t filename and shows both duplicate and original, Ignores the filetype if specified
 
-API: /ezio/api/search
+API: /filebase/api/search
 MethodType: POST
 Desc: TBD
 
-API: /ezio/api/size-zero
+API: /filebase/api/size-zero
 MethodType: POST
 Desc: Gets all files list and returns the files that are of size zero
 
