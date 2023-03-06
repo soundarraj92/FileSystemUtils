@@ -57,7 +57,7 @@ public class Endpoint {
 	public ResponseEntity<String> findSearched(@RequestBody InputDto input) throws AppCustomException {
 		log.info("Inside Endpoint.findSearched()");
 
-		String response = service.findDuplicateService(input);
+		String response = "";
 
 		return new ResponseEntity<>(response, HttpStatus.OK);
 
