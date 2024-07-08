@@ -9,8 +9,8 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
 	@Bean
-	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-		http.csrf().disable().authorizeRequests().anyRequest().authenticated().and().httpBasic();
+	SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+		http.csrf().disable().authorizeHttpRequests().anyRequest().authenticated().and().httpBasic();
 		return http.build();
 	}
 }
